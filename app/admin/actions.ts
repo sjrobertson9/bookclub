@@ -98,6 +98,13 @@ export async function reorderDiscussions(boardId: string, orderedIds: string[]) 
   if (failed?.error) throw new Error(failed.error.message);
 }
 
+export async function togglePinDiscussion(discussionId: string, boardId: string, pinned: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("discussions").update({ pinned }).eq("id", discussionId);
+  if (error) throw new Error(error.message);
+  redirect(`/admin/boards/${boardId}`);
+}
+
 export async function deleteDiscussion(discussionId: string, boardId: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("discussions").delete().eq("id", discussionId);

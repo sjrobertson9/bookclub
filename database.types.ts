@@ -66,6 +66,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          pinned: boolean
           position: number
           scheduled_date: string | null
           slug: string
@@ -76,6 +77,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          pinned?: boolean
           position: number
           scheduled_date?: string | null
           slug: string
@@ -86,6 +88,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          pinned?: boolean
           position?: number
           scheduled_date?: string | null
           slug?: string

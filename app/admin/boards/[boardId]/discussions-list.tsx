@@ -7,7 +7,7 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { move } from "@dnd-kit/helpers";
 import { GripVertical } from "lucide-react";
 import type { Discussion } from "@/lib/data";
-import { deleteDiscussion, reorderDiscussions } from "@/app/admin/actions";
+import { deleteDiscussion, reorderDiscussions, togglePinDiscussion } from "@/app/admin/actions";
 import { ConfirmDeleteButton } from "./confirm-delete-button";
 
 function SortableDiscussionRow({
@@ -28,12 +28,18 @@ function SortableDiscussionRow({
       <span ref={handleRef} className="cursor-grab active:cursor-grabbing text-muted-foreground touch-none">
         <GripVertical size={16} />
       </span>
+      {discussion.pinned && <span title="Pinned">📌</span>}
       <Link href={`/board/${boardSlug}/discussion/${discussion.slug}`} className="text-sm underline underline-offset-4">
         {discussion.title}
       </Link>
       <Link href={`/admin/boards/${boardId}/discussions/${discussion.id}`} className="text-xs text-muted-foreground underline underline-offset-4">
         edit
       </Link>
+      <form action={togglePinDiscussion.bind(null, discussion.id, boardId, !discussion.pinned)}>
+        <button type="submit" className="text-xs text-muted-foreground underline underline-offset-4">
+          {discussion.pinned ? "unpin" : "pin"}
+        </button>
+      </form>
       <ConfirmDeleteButton
         action={deleteDiscussion.bind(null, discussion.id, boardId)}
         confirmMessage={`Delete "${discussion.title}" and all its comments? This can't be undone.`}

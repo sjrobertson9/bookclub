@@ -8,6 +8,7 @@ export default async function Page({ params }: { params: Promise<{ boardSlug: st
   const board = await getBoardBySlug(boardSlug);
   const discussions = await getDiscussions(board.id);
   const sorted = [...discussions].sort((a, b) => {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
     if (a.scheduled_date && b.scheduled_date) return a.scheduled_date.localeCompare(b.scheduled_date);
     if (a.scheduled_date) return -1;
     if (b.scheduled_date) return 1;
@@ -25,7 +26,7 @@ export default async function Page({ params }: { params: Promise<{ boardSlug: st
             href={`/board/${boardSlug}/discussion/${d.slug}`}
             className="flex items-center justify-between hover:underline"
           >
-            <span>{d.title}</span>
+            <span>{d.pinned && "📌 "}{d.title}</span>
             {d.scheduled_date && (
               <span className="text-xs text-muted-foreground">
                 {new Date(d.scheduled_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}

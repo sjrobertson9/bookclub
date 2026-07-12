@@ -1,0 +1,1 @@
+ALTER TABLE discussions ADD COLUMN pinned BOOLEAN NOT NULL DEFAULT false;
