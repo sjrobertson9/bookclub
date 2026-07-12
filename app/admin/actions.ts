@@ -112,6 +112,18 @@ export async function deleteDiscussion(discussionId: string, boardId: string) {
   redirect(`/admin/boards/${boardId}`);
 }
 
+export async function updateBoard(boardId: string, formData: FormData) {
+  const description = (formData.get("description") as string) || null;
+  const cover_image_path = (formData.get("cover_image_path") as string) || null;
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("boards")
+    .update({ description, cover_image_path })
+    .eq("id", boardId);
+  if (error) throw new Error(error.message);
+  redirect(`/admin/boards/${boardId}`);
+}
+
 export async function deleteBoard(boardId: string) {
   const supabase = await createClient();
   const { error } = await supabase

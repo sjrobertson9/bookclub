@@ -4,7 +4,9 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { getBoard, getDiscussions } from "@/lib/data";
 import { Button } from "@/components/ui/button";
-import { deleteBoard, generateInviteLink } from "@/app/admin/actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { deleteBoard, generateInviteLink, updateBoard } from "@/app/admin/actions";
 import { CopyInviteButton } from "./copy-invite-button";
 import { ConfirmDeleteButton } from "./confirm-delete-button";
 import { DiscussionsList } from "./discussions-list";
@@ -46,6 +48,36 @@ export default async function BoardAdminPage({
             </Button>
           </form>
         </div>
+      </section>
+
+      <section className="space-y-4">
+        <h3 className="font-medium">Book details</h3>
+        <form action={updateBoard.bind(null, boardId)} className="space-y-4 max-w-sm">
+          <div className="space-y-2">
+            <Label htmlFor="cover_image_path">Cover image path</Label>
+            <Input
+              id="cover_image_path"
+              name="cover_image_path"
+              placeholder="/covers/devout.jpg"
+              defaultValue={board.cover_image_path ?? ""}
+            />
+            <p className="text-xs text-muted-foreground">
+              Drop the image file in <code>public/covers/</code>, then enter its path here.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <textarea
+              id="description"
+              name="description"
+              rows={5}
+              defaultValue={board.description ?? ""}
+              placeholder="What's this book about?"
+              className="border rounded px-3 py-2 text-sm w-full resize-none"
+            />
+          </div>
+          <Button type="submit">Save</Button>
+        </form>
       </section>
 
       <section className="space-y-4">

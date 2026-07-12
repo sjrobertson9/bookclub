@@ -41,19 +41,25 @@ export type Database = {
     Tables: {
       boards: {
         Row: {
+          cover_image_path: string | null
           created_at: string
+          description: string | null
           id: string
           name: string
           slug: string
         }
         Insert: {
+          cover_image_path?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           name: string
           slug: string
         }
         Update: {
+          cover_image_path?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           name?: string
           slug?: string
