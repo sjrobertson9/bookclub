@@ -4,7 +4,7 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import type { PostNode } from "@/lib/data";
-import { createPost, editPost, deletePost } from "@/app/board/actions";
+import { createPost, editPost, deletePost, purgePost } from "@/app/board/actions";
 
 export default function Post({
   node,
@@ -24,6 +24,7 @@ export default function Post({
   const replyAction = createPost.bind(null, node.discussion_id, node.id, boardId);
   const editAction = editPost.bind(null, node.id, boardId, node.discussion_id);
   const deleteAction = deletePost.bind(null, node.id, boardId, node.discussion_id);
+  const purgeAction = purgePost.bind(null, node.id, boardId, node.discussion_id);
   const canModerate = isAdmin || (currentUserId !== null && node.user_id === currentUserId);
 
   return (
@@ -84,11 +85,27 @@ export default function Post({
             <button
               type="submit"
               onClick={(e) => {
-                if (!confirm("Delete this comment?")) e.preventDefault();
+                const msg = node.children.length > 0
+                  ? `This comment has ${node.children.length} repl${node.children.length === 1 ? "y" : "ies"}. Deleting it will show "[deleted]" but keep the replies. Delete anyway?`
+                  : "Delete this comment? It will be completely removed.";
+                if (!confirm(msg)) e.preventDefault();
               }}
               className="text-xs text-muted-foreground hover:underline"
             >
               delete
+            </button>
+          </form>
+        )}
+        {canModerate && node.deleted_at && node.children.length === 0 && (
+          <form action={purgeAction}>
+            <button
+              type="submit"
+              onClick={(e) => {
+                if (!confirm("Permanently remove this deleted comment?")) e.preventDefault();
+              }}
+              className="text-xs text-muted-foreground hover:underline"
+            >
+              remove
             </button>
           </form>
         )}

@@ -150,10 +150,59 @@ export async function deletePost(postId: string, boardId: string, discussionId: 
 
   const path = await discussionPath(supabase, boardId, discussionId);
 
-  const { error } = await supabase
+  const { count } = await supabase
     .from("posts")
-    .update({ content: "[deleted]", deleted_at: new Date().toISOString() })
-    .eq("id", postId);
+    .select("id", { count: "exact", head: true })
+    .eq("parent_id", postId);
+
+  if (!count) {
+    const { error } = await supabase.from("posts").delete().eq("id", postId);
+    if (error) throw new Error(error.message);
+  } else {
+    const { error } = await supabase
+      .from("posts")
+      .update({ content: "[deleted]", deleted_at: new Date().toISOString() })
+      .eq("id", postId);
+    if (error) throw new Error(error.message);
+  }
+
+  redirect(path);
+}
+
+export async function purgePost(postId: string, boardId: string, discussionId: string) {
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(COOKIE_NAME);
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAdmin = !!user;
+
+  let user_id: string | null = null;
+  if (cookie) {
+    try {
+      const { payload } = await jwtVerify(cookie.value, secret());
+      ({ user_id } = payload as { user_id: string });
+    } catch {
+      redirect("/auth/error");
+    }
+  }
+
+  if (!isAdmin && user_id === null) redirect("/auth/error");
+
+  const { data: post, error: fetchError } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", postId)
+    .single();
+  if (fetchError) throw new Error(fetchError.message);
+
+  if (!isAdmin && post.user_id !== user_id) {
+    redirect("/auth/error");
+  }
+
+  const path = await discussionPath(supabase, boardId, discussionId);
+
+  const { error } = await supabase.from("posts").delete().eq("id", postId);
   if (error) throw new Error(error.message);
 
   redirect(path);
