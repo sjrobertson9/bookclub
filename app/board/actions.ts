@@ -76,9 +76,11 @@ export async function editPost(
   const cookieStore = await cookies();
   const cookie = cookieStore.get(COOKIE_NAME);
 
-  let user_id: string | null = null;
-  let isAdmin = false;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAdmin = !!user;
 
+  let user_id: string | null = null;
   if (cookie) {
     try {
       const { payload } = await jwtVerify(cookie.value, secret());
@@ -86,14 +88,10 @@ export async function editPost(
     } catch {
       redirect("/auth/error");
     }
-  } else {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/auth/error");
-    isAdmin = true;
   }
 
-  const supabase = await createClient();
+  if (!isAdmin && user_id === null) redirect("/auth/error");
+
   const { data: post, error: fetchError } = await supabase
     .from("posts")
     .select("user_id")
@@ -123,9 +121,11 @@ export async function deletePost(postId: string, boardId: string, discussionId: 
   const cookieStore = await cookies();
   const cookie = cookieStore.get(COOKIE_NAME);
 
-  let user_id: string | null = null;
-  let isAdmin = false;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAdmin = !!user;
 
+  let user_id: string | null = null;
   if (cookie) {
     try {
       const { payload } = await jwtVerify(cookie.value, secret());
@@ -133,14 +133,10 @@ export async function deletePost(postId: string, boardId: string, discussionId: 
     } catch {
       redirect("/auth/error");
     }
-  } else {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/auth/error");
-    isAdmin = true;
   }
 
-  const supabase = await createClient();
+  if (!isAdmin && user_id === null) redirect("/auth/error");
+
   const { data: post, error: fetchError } = await supabase
     .from("posts")
     .select("user_id")

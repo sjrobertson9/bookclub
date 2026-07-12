@@ -25,7 +25,11 @@ export default async function Page({
   const cookie = cookieStore.get("book_club_session");
   let handle: string | null = null;
   let currentUserId: string | null = null;
-  let isAdmin = false;
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAdmin = !!user;
+
   if (cookie) {
     try {
       const { payload } = await jwtVerify(cookie.value, secret());
@@ -35,10 +39,6 @@ export default async function Page({
     } catch {
       // ignore
     }
-  } else {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    isAdmin = !!user;
   }
 
   return (
