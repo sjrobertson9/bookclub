@@ -22,7 +22,7 @@ export default async function Home() {
             <div className="flex flex-col gap-2">
               <span className="text-4xl">Books We're Reading:</span>
               {boards.map((b) => (
-                <Link key={b.id} href={`/board/${b.id}`} className="hover:underline">
+                <Link key={b.id} href={`/board/${b.slug}`} className="hover:underline">
                   {b.name}
                 </Link>
               ))}

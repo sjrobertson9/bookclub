@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
 
 import Post from "@/components/post";
-import { getBoard, getDicussion, getPosts } from "@/lib/data";
+import { getBoardBySlug, getDiscussionBySlug, getPosts } from "@/lib/data";
 import { createPost } from "@/app/board/actions";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
@@ -15,21 +16,29 @@ export default async function Page({
   params: Promise<{ boardSlug: string; discussionSlug: string }>;
 }) {
   const { boardSlug, discussionSlug } = await params;
-  const posts = await getPosts(discussionSlug);
-  const rootAction = createPost.bind(null, discussionSlug, null, boardSlug);
-  const board = await getBoard(boardSlug);
-  const discussion = await getDicussion(discussionSlug);
+  const board = await getBoardBySlug(boardSlug);
+  const discussion = await getDiscussionBySlug(board.id, discussionSlug);
+  const posts = await getPosts(discussion.id);
+  const rootAction = createPost.bind(null, discussion.id, null, boardSlug);
 
   const cookieStore = await cookies();
   const cookie = cookieStore.get("book_club_session");
   let handle: string | null = null;
+  let currentUserId: string | null = null;
+  let isAdmin = false;
   if (cookie) {
     try {
       const { payload } = await jwtVerify(cookie.value, secret());
-      handle = (payload as { handle: string }).handle ?? null;
+      const session = payload as { handle: string; user_id: string };
+      handle = session.handle ?? null;
+      currentUserId = session.user_id ?? null;
     } catch {
       // ignore
     }
+  } else {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    isAdmin = !!user;
   }
 
   return (
@@ -47,7 +56,7 @@ export default async function Page({
       )}
       <div className="flex flex-col">
         {posts.map((post) => (
-          <Post key={post.id} node={post} boardId={boardSlug} />
+          <Post key={post.id} node={post} boardId={boardSlug} currentUserId={currentUserId} isAdmin={isAdmin} />
         ))}
       </div>
       <form action={rootAction} className="flex flex-col gap-2 border-t pt-4">
@@ -56,7 +65,7 @@ export default async function Page({
           required
           rows={4}
           className="border rounded px-3 py-2 text-sm w-full resize-none"
-          placeholder="Add a comment..."
+          placeholder="Add a comment... (supports **bold**, *italic*, > quote)"
         />
         <button type="submit" className="self-start text-sm underline underline-offset-4">
           Post

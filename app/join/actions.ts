@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyInviteToken } from "@/lib/invite-token";
+import { getBoard } from "@/lib/data";
 
 const COOKIE_NAME = "book_club_session";
 const MAX_AGE = 60 * 60 * 24 * 90;
@@ -35,5 +36,6 @@ export async function joinBoard(token: string, handle: string) {
     path: "/",
   });
 
-  redirect(`/board/${board_id}`);
+  const board = await getBoard(board_id);
+  redirect(`/board/${board.slug}`);
 }

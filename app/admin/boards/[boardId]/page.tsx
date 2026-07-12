@@ -63,7 +63,7 @@ export default async function BoardAdminPage({
             {discussions.map((d) => (
               <li key={d.id} className="flex items-center gap-3">
                 <Link
-                  href={`/board/${boardId}/discussion/${d.id}`}
+                  href={`/board/${board.slug}/discussion/${d.slug}`}
                   className="text-sm underline underline-offset-4"
                 >
                   {d.title}

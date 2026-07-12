@@ -20,6 +20,13 @@ export async function getBoard(boardId: string): Promise<Board> {
   return data;
 }
 
+export async function getBoardBySlug(slug: string): Promise<Board> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("boards").select('*').eq('slug', slug).single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 export async function getDiscussions(boardId: string): Promise<Discussion[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -34,6 +41,18 @@ export async function getDiscussions(boardId: string): Promise<Discussion[]> {
 export async function getDicussion(discussionId: string): Promise<Discussion> {
   const supabase = await createClient();
   const {data, error} = await supabase.from("discussions").select("*").eq('id', discussionId).single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getDiscussionBySlug(boardId: string, slug: string): Promise<Discussion> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("discussions")
+    .select("*")
+    .eq("board_id", boardId)
+    .eq("slug", slug)
+    .single();
   if (error) throw new Error(error.message);
   return data;
 }

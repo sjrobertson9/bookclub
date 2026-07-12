@@ -1,11 +1,12 @@
 export const dynamic = "force-dynamic";
 
-import { getDiscussions } from "@/lib/data";
+import { getBoardBySlug, getDiscussions } from "@/lib/data";
 import Link from "next/link";
 
 export default async function Page({ params }: { params: Promise<{ boardSlug: string }> }) {
   const { boardSlug } = await params;
-  const discussions = await getDiscussions(boardSlug);
+  const board = await getBoardBySlug(boardSlug);
+  const discussions = await getDiscussions(board.id);
 
   return (
     <div className="max-w-5xl mx-auto p-5 flex flex-col gap-4">
@@ -15,7 +16,7 @@ export default async function Page({ params }: { params: Promise<{ boardSlug: st
         {discussions.map((d) => (
           <Link
             key={d.id}
-            href={`/board/${boardSlug}/discussion/${d.id}`}
+            href={`/board/${boardSlug}/discussion/${d.slug}`}
             className="hover:underline"
           >
             {d.title}

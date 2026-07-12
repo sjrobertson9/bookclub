@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -39,16 +44,19 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          slug: string
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
+          slug: string
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
+          slug?: string
         }
         Relationships: []
       }
@@ -58,6 +66,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          slug: string
           title: string
         }
         Insert: {
@@ -65,6 +74,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          slug: string
           title: string
         }
         Update: {
@@ -72,6 +82,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          slug?: string
           title?: string
         }
         Relationships: [
@@ -91,6 +102,7 @@ export type Database = {
           discussion_id: string
           id: string
           parent_id: string | null
+          updated_at: string | null
           user_handle: string
           user_id: string
         }
@@ -100,6 +112,7 @@ export type Database = {
           discussion_id: string
           id?: string
           parent_id?: string | null
+          updated_at?: string | null
           user_handle: string
           user_id: string
         }
@@ -109,6 +122,7 @@ export type Database = {
           discussion_id?: string
           id?: string
           parent_id?: string | null
+          updated_at?: string | null
           user_handle?: string
           user_id?: string
         }
@@ -270,4 +284,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
