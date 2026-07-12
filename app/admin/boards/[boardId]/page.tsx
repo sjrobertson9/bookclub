@@ -4,9 +4,10 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { getBoard, getDiscussions } from "@/lib/data";
 import { Button } from "@/components/ui/button";
-import { deleteBoard, deleteDiscussion, generateInviteLink } from "@/app/admin/actions";
+import { deleteBoard, generateInviteLink } from "@/app/admin/actions";
 import { CopyInviteButton } from "./copy-invite-button";
 import { ConfirmDeleteButton } from "./confirm-delete-button";
+import { DiscussionsList } from "./discussions-list";
 
 export default async function BoardAdminPage({
   params,
@@ -60,32 +61,7 @@ export default async function BoardAdminPage({
         {discussions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No discussions yet.</p>
         ) : (
-          <ul className="space-y-2">
-            {discussions.map((d) => (
-              <li key={d.id} className="flex items-center gap-3">
-                <Link
-                  href={`/board/${board.slug}/discussion/${d.slug}`}
-                  className="text-sm underline underline-offset-4"
-                >
-                  {d.title}
-                </Link>
-                <Link
-                  href={`/admin/boards/${boardId}/discussions/${d.id}`}
-                  className="text-xs text-muted-foreground underline underline-offset-4"
-                >
-                  edit
-                </Link>
-                <ConfirmDeleteButton
-                  action={deleteDiscussion.bind(null, d.id, boardId)}
-                  confirmMessage={`Delete "${d.title}" and all its comments? This can't be undone.`}
-                >
-                  <button type="submit" className="text-xs text-muted-foreground underline underline-offset-4">
-                    delete
-                  </button>
-                </ConfirmDeleteButton>
-              </li>
-            ))}
-          </ul>
+          <DiscussionsList initialDiscussions={discussions} boardId={boardId} boardSlug={board.slug} />
         )}
       </section>
       <section className="space-y-4">

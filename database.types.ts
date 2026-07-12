@@ -66,6 +66,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          position: number
           scheduled_date: string | null
           slug: string
           title: string
@@ -75,6 +76,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          position: number
           scheduled_date?: string | null
           slug: string
           title: string
@@ -84,6 +86,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          position?: number
           scheduled_date?: string | null
           slug?: string
           title?: string

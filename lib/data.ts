@@ -33,7 +33,7 @@ export async function getDiscussions(boardId: string): Promise<Discussion[]> {
     .from("discussions")
     .select("*")
     .eq("board_id", boardId)
-    .order("created_at");
+    .order("position");
   if (error) throw new Error(error.message);
   return data ?? [];
 }

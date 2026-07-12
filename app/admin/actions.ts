@@ -56,9 +56,19 @@ export async function createDiscussion(boardId: string, formData: FormData) {
   const scheduled_date = (formData.get("scheduled_date") as string) || null;
   const supabase = await createClient();
   const slug = await uniqueDiscussionSlug(supabase, boardId, title);
+
+  const { data: last } = await supabase
+    .from("discussions")
+    .select("position")
+    .eq("board_id", boardId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const position = (last?.position ?? 0) + 1;
+
   const { error } = await supabase
     .from("discussions")
-    .insert({ board_id: boardId, title, description, slug, scheduled_date })
+    .insert({ board_id: boardId, title, description, slug, scheduled_date, position })
     .select()
     .single();
   if (error) throw new Error(error.message);
@@ -75,6 +85,17 @@ export async function updateDiscussion(discussionId: string, boardId: string, fo
     .eq("id", discussionId);
   if (error) throw new Error(error.message);
   redirect(`/admin/boards/${boardId}`);
+}
+
+export async function reorderDiscussions(boardId: string, orderedIds: string[]) {
+  const supabase = await createClient();
+  const results = await Promise.all(
+    orderedIds.map((id, index) =>
+      supabase.from("discussions").update({ position: index }).eq("id", id).eq("board_id", boardId),
+    ),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) throw new Error(failed.error.message);
 }
 
 export async function deleteDiscussion(discussionId: string, boardId: string) {
