@@ -118,3 +118,47 @@ export async function editPost(
 
   redirect(path);
 }
+
+export async function deletePost(postId: string, boardId: string, discussionId: string) {
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(COOKIE_NAME);
+
+  let user_id: string | null = null;
+  let isAdmin = false;
+
+  if (cookie) {
+    try {
+      const { payload } = await jwtVerify(cookie.value, secret());
+      ({ user_id } = payload as { user_id: string });
+    } catch {
+      redirect("/auth/error");
+    }
+  } else {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/auth/error");
+    isAdmin = true;
+  }
+
+  const supabase = await createClient();
+  const { data: post, error: fetchError } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", postId)
+    .single();
+  if (fetchError) throw new Error(fetchError.message);
+
+  if (!isAdmin && post.user_id !== user_id) {
+    redirect("/auth/error");
+  }
+
+  const path = await discussionPath(supabase, boardId, discussionId);
+
+  const { error } = await supabase
+    .from("posts")
+    .update({ content: "[deleted]", deleted_at: new Date().toISOString() })
+    .eq("id", postId);
+  if (error) throw new Error(error.message);
+
+  redirect(path);
+}

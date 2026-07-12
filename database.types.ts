@@ -66,6 +66,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          scheduled_date: string | null
           slug: string
           title: string
         }
@@ -74,6 +75,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          scheduled_date?: string | null
           slug: string
           title: string
         }
@@ -82,6 +84,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          scheduled_date?: string | null
           slug?: string
           title?: string
         }
@@ -99,6 +102,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          deleted_at: string | null
           discussion_id: string
           id: string
           parent_id: string | null
@@ -109,6 +113,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          deleted_at?: string | null
           discussion_id: string
           id?: string
           parent_id?: string | null
@@ -119,6 +124,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          deleted_at?: string | null
           discussion_id?: string
           id?: string
           parent_id?: string | null

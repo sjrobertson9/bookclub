@@ -4,8 +4,9 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { getBoard, getDiscussions } from "@/lib/data";
 import { Button } from "@/components/ui/button";
-import { deleteBoard, generateInviteLink } from "@/app/admin/actions";
+import { deleteBoard, deleteDiscussion, generateInviteLink } from "@/app/admin/actions";
 import { CopyInviteButton } from "./copy-invite-button";
+import { ConfirmDeleteButton } from "./confirm-delete-button";
 
 export default async function BoardAdminPage({
   params,
@@ -74,15 +75,26 @@ export default async function BoardAdminPage({
                 >
                   edit
                 </Link>
+                <ConfirmDeleteButton
+                  action={deleteDiscussion.bind(null, d.id, boardId)}
+                  confirmMessage={`Delete "${d.title}" and all its comments? This can't be undone.`}
+                >
+                  <button type="submit" className="text-xs text-muted-foreground underline underline-offset-4">
+                    delete
+                  </button>
+                </ConfirmDeleteButton>
               </li>
             ))}
           </ul>
         )}
       </section>
       <section className="space-y-4">
-        <form action={deleteBoard.bind(null, boardId)}>
+        <ConfirmDeleteButton
+          action={deleteBoard.bind(null, boardId)}
+          confirmMessage={`Delete "${board.name}" and everything in it? This can't be undone.`}
+        >
           <Button variant="destructive" type="submit">Delete</Button>
-        </form>
+        </ConfirmDeleteButton>
       </section>
     </div>
   );

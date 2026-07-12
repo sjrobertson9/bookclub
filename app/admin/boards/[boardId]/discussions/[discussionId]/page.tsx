@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getDicussion } from "@/lib/data";
 import { updateDiscussion } from "@/app/admin/actions";
@@ -30,6 +31,10 @@ export default async function EditDiscussionPage({
             defaultValue={discussion.description ?? ""}
             className="border rounded px-3 py-2 text-sm w-full resize-none"
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="scheduled_date">Reading date (optional)</Label>
+          <Input id="scheduled_date" name="scheduled_date" type="date" defaultValue={discussion.scheduled_date ?? ""} />
         </div>
         <Button type="submit">Save</Button>
       </form>

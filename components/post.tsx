@@ -4,7 +4,7 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import type { PostNode } from "@/lib/data";
-import { createPost, editPost } from "@/app/board/actions";
+import { createPost, editPost, deletePost } from "@/app/board/actions";
 
 export default function Post({
   node,
@@ -23,12 +23,15 @@ export default function Post({
   const [editing, setEditing] = useState(false);
   const replyAction = createPost.bind(null, node.discussion_id, node.id, boardId);
   const editAction = editPost.bind(null, node.id, boardId, node.discussion_id);
-  const canEdit = isAdmin || (currentUserId !== null && node.user_id === currentUserId);
+  const deleteAction = deletePost.bind(null, node.id, boardId, node.discussion_id);
+  const canModerate = isAdmin || (currentUserId !== null && node.user_id === currentUserId);
 
   return (
     <div style={{ marginLeft: depth * 24 }} className="py-2">
       <div className="text-sm font-semibold">{node.user_handle}</div>
-      {editing ? (
+      {node.deleted_at ? (
+        <em className="text-muted-foreground text-sm">[deleted]</em>
+      ) : editing ? (
         <form action={editAction} className="mt-1 flex flex-col gap-2">
           <textarea
             name="content"
@@ -68,13 +71,26 @@ export default function Post({
         >
           {replying ? "cancel" : "reply"}
         </button>
-        {canEdit && !editing && (
+        {canModerate && !editing && !node.deleted_at && (
           <button
             onClick={() => setEditing(true)}
             className="text-xs text-muted-foreground hover:underline"
           >
             edit
           </button>
+        )}
+        {canModerate && !node.deleted_at && (
+          <form action={deleteAction}>
+            <button
+              type="submit"
+              onClick={(e) => {
+                if (!confirm("Delete this comment?")) e.preventDefault();
+              }}
+              className="text-xs text-muted-foreground hover:underline"
+            >
+              delete
+            </button>
+          </form>
         )}
       </div>
       {replying && (

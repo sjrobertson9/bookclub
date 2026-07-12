@@ -53,11 +53,12 @@ export async function createBoard(formData: FormData) {
 export async function createDiscussion(boardId: string, formData: FormData) {
   const title = formData.get("title") as string;
   const description = (formData.get("description") as string) || null;
+  const scheduled_date = (formData.get("scheduled_date") as string) || null;
   const supabase = await createClient();
   const slug = await uniqueDiscussionSlug(supabase, boardId, title);
   const { error } = await supabase
     .from("discussions")
-    .insert({ board_id: boardId, title, description, slug })
+    .insert({ board_id: boardId, title, description, slug, scheduled_date })
     .select()
     .single();
   if (error) throw new Error(error.message);
@@ -66,11 +67,19 @@ export async function createDiscussion(boardId: string, formData: FormData) {
 
 export async function updateDiscussion(discussionId: string, boardId: string, formData: FormData) {
   const description = (formData.get("description") as string) || null;
+  const scheduled_date = (formData.get("scheduled_date") as string) || null;
   const supabase = await createClient();
   const { error } = await supabase
     .from("discussions")
-    .update({ description })
+    .update({ description, scheduled_date })
     .eq("id", discussionId);
+  if (error) throw new Error(error.message);
+  redirect(`/admin/boards/${boardId}`);
+}
+
+export async function deleteDiscussion(discussionId: string, boardId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("discussions").delete().eq("id", discussionId);
   if (error) throw new Error(error.message);
   redirect(`/admin/boards/${boardId}`);
 }

@@ -28,6 +28,10 @@ export default async function NewDiscussionPage({
             className="border rounded px-3 py-2 text-sm w-full resize-none"
           />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="scheduled_date">Reading date (optional)</Label>
+          <Input id="scheduled_date" name="scheduled_date" type="date" />
+        </div>
         <Button type="submit">Create discussion</Button>
       </form>
     </div>
