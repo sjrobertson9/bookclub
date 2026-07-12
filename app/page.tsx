@@ -5,6 +5,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { getBoards } from "@/lib/data";
 import Link from "next/link";
 import { Suspense } from "react";
+import Image from "next/image";
 
 export default async function Home() {
   const boards = await getBoards();
@@ -12,6 +13,16 @@ export default async function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center">
       <div className="flex-1 w-full flex flex-col gap-20 items-center">
+        <div className="w-full flex justify-center pt-6">
+          <Image
+            src="/logo.png"
+            alt="Kid Gorges Book Club"
+            width={400}
+            height={300}
+            priority
+            className="h-auto w-56"
+          />
+        </div>
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
             {/* Book Club! 📚 */}
